@@ -33,3 +33,4 @@ dist-ssr
 
 # Env files with secrets
 .env
+.vercel
