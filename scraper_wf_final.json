@@ -1,0 +1,39 @@
+{
+  "name": "Rodrigo — URL Scraper",
+  "nodes": [
+    {
+      "id": "n1",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [250, 300],
+      "parameters": { "httpMethod": "POST", "path": "scrape-imovel", "responseMode": "responseNode", "options": {} },
+      "webhookId": "sc-imovel"
+    },
+    {
+      "id": "n2",
+      "name": "Extract",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [550, 300],
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconst body = input.body || input;\nconst url = body.url || '';\n\n// Fetch the page\nconst http = this.helpers.httpRequest.bind(this.helpers);\nconst resp = await http({ method: 'GET', url: url, json: false });\nconst html = resp || '';\n\n// Extract title\nlet title = '';\nconst ti = html.indexOf('<title>');\nif (ti >= 0) {\n  const te = html.indexOf('</title>', ti);\n  if (te > ti) title = html.substring(ti + 7, te).trim();\n}\n\n// Extract price\nlet price = 0;\nconst euroPos = html.indexOf('\\u20AC');\nif (euroPos >= 0) {\n  const after = html.substring(euroPos, euroPos + 30).match(/[\\d.]+/);\n  if (after) price = parseInt(after[0].replace(/\\./g, ''));\n}\n\n// Extract typology\nconst typo = html.match(/ (T\\d|V\\d) /);\nconst typology = typo ? typo[1].toUpperCase() : '';\n\n// Extract area\nconst areaMatch = html.match(/(\\d+)\\s*m[\\u00b22]/i);\nconst area = areaMatch ? parseInt(areaMatch[1]) : 0;\n\nreturn [{ json: { titulo: title, preco: price, tipologia: typology, area: area, url_original: url } }];"
+      }
+    },
+    {
+      "id": "n3",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [850, 300],
+      "parameters": { "respondWith": "json", "responseBody": "={{ $json }}", "options": { "responseCode": 200 } }
+    }
+  ],
+  "connections": {
+    "Webhook": { "main": [[{ "node": "Extract", "type": "main", "index": 0 }]] },
+    "Extract": { "main": [[{ "node": "Respond", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1", "saveManualExecutions": true },
+  "staticData": null,
+  "pinData": null
+}

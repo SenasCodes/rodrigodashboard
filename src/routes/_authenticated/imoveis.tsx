@@ -30,68 +30,49 @@ function ImoveisPage() {
     if (!url) return;
     setFetching(true);
 
-    // Try to extract property info from URL
-    const urlObj = new URL(url.startsWith("http") ? url : "https://" + url);
+    const fullUrl = url.startsWith("http") ? url : "https://" + url;
+    const urlObj = new URL(fullUrl);
     const pathParts = urlObj.pathname.split("/").filter(Boolean);
     const lastSegment = pathParts[pathParts.length - 1] || "";
+    const guessedTitle = lastSegment.replace(/[-_]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()).replace(/Imovel\s*/i, "Imóvel ").slice(0, 60) || "Imóvel do portal";
 
-    // Guess title from URL path
-    const guessedTitle = lastSegment
-      .replace(/[-_]/g, " ")
-      .replace(/\b\w/g, (c) => c.toUpperCase())
-      .replace(/Imovel\s*/i, "Imóvel ")
-      .slice(0, 60) || "Imóvel do portal";
-
-    // Try n8n webhook if configured
     let fetched = false;
-    const n8nWebhook = import.meta.env.VITE_N8N_SCRAPER_URL;
-    if (n8nWebhook) {
-      try {
-        const res = await fetch(n8nWebhook, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: url.startsWith("http") ? url : "https://" + url }),
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.titulo || data.title) {
-            setForm({
-              titulo: data.titulo || data.title || guessedTitle,
-              preco: Number(data.preco || data.price || 0),
-              localizacao: data.localizacao || data.location || "",
-              tipologia: data.tipologia || data.typology || "T2",
-              area: Number(data.area || 0),
-              quartos: Number(data.quartos || data.bedrooms || 2),
-              casasBanho: Number(data.casasBanho || data.bathrooms || 1),
-              descricao: data.descricao || data.description || "",
-              imagem: data.imagem || data.image || form.imagem,
-              ativo: true,
-            });
-            fetched = true;
-          }
+
+    // Try n8n scraper webhook
+    try {
+      const res = await fetch("https://senaflow.app.n8n.cloud/webhook/scrape-imovel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: fullUrl }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.titulo || data.title) {
+          setForm({
+            titulo: data.titulo || data.title || guessedTitle,
+            preco: Number(data.preco || data.price || 0),
+            localizacao: data.localizacao || data.location || "",
+            tipologia: data.tipologia || data.typology || "T2",
+            area: Number(data.area || 0),
+            quartos: Number(data.quartos || data.bedrooms || parseInt(data.tipologia?.replace("T","") || "2") || 2),
+            casasBanho: Number(data.casasBanho || data.bathrooms || 1),
+            descricao: data.descricao || data.description || "",
+            imagem: data.imagem || data.image || form.imagem,
+            ativo: true,
+          });
+          fetched = true;
         }
-      } catch (e) {
-        console.log("Scraper webhook unavailable, using URL-based guess");
       }
-    }
+    } catch (e) { /* n8n scraper unavailable */ }
 
     if (!fetched) {
-      // Guess typology from URL
-      const typoMatch = guessedTitle.match(/\b(T[0-9])\b/i) || guessedTitle.match(/\bTipo\s*([0-9])\b/i);
+      const typoMatch = guessedTitle.match(/\b(T[0-9])\b/i);
       const guessedTypology = typoMatch ? typoMatch[1].toUpperCase() : "T2";
-
-      // Guess price from URL
-      const priceMatch = guessedTitle.match(/(\d+)\s*(?:mil|k|000)/i) || url.match(/(\d{5,7})/);
-
       setForm({
         titulo: guessedTitle,
-        preco: priceMatch ? Number(priceMatch[1]) * (guessedTitle.includes("mil") ? 1000 : 1) : 0,
-        localizacao: pathParts.includes("lisboa") ? "Lisboa" : "",
-        tipologia: guessedTypology,
-        area: 0,
-        quartos: Number(guessedTypology?.replace("T", "") || 2),
-        casasBanho: 1,
-        descricao: "URL: " + url,
+        preco: 0, localizacao: pathParts.includes("lisboa") ? "Lisboa" : "",
+        tipologia: guessedTypology, area: 0, quartos: parseInt(guessedTypology?.replace("T", "") || "2"),
+        casasBanho: 1, descricao: "URL: " + url,
         imagem: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop",
         ativo: true,
       });
