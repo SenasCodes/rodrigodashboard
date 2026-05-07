@@ -1,6 +1,9 @@
-import { supabase } from "@/integrations/supabase/client";
+import { createClient } from "@supabase/supabase-js";
 
-export { supabase };
+const SUPABASE_URL = "https://conlfwvqofubnkrqezlo.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNvbmxmd3Zxb2Z1Ym5rcnFlemxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxMTM0MTMsImV4cCI6MjA5MzY4OTQxM30.Qdu_3VKwxGUabdRQ5Oo4ml2ds4L5nqAaxsru225GP9I";
+
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);)
 
 // ─── Types matching the dashboard mock types ───
 export type Canal = "whatsapp" | "telegram" | "email";

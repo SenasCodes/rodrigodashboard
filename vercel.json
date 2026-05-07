@@ -3,5 +3,9 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "installCommand": "npm install",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+  "env": {
+    "VITE_SUPABASE_URL": "https://conlfwvqofubnkrqezlo.supabase.co",
+    "VITE_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNvbmxmd3Zxb2Z1Ym5rcnFlemxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxMTM0MTMsImV4cCI6MjA5MzY4OTQxM30.Qdu_3VKwxGUabdRQ5Oo4ml2ds4L5nqAaxsru225GP9I"
+  }
 }
