@@ -3,7 +3,7 @@ import { useApp } from "../../lib/app-context";
 import { UserPlus, MessageCircle, CalendarCheck, AlertTriangle, MessagesSquare, Home, TrendingUp, TrendingDown, Eye, Phone, Copy } from "lucide-react";
 import { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, type DropResult } from "@hello-pangea/dnd";
-import type { Lead, FaseKanban } from "../../lib/mock-data";
+import type { Lead, FaseKanban } from "../../lib/supabase";
 
 export const Route = createFileRoute("/_authenticated/")({
   component: DashboardPage,

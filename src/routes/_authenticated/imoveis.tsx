@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useApp } from "../../lib/app-context";
 import { useState } from "react";
 import { Plus, Pencil, Trash2, X, Loader2, Bath, BedDouble, Maximize } from "lucide-react";
-import type { Imovel } from "../../lib/mock-data";
+import type { Imovel } from "../../lib/supabase";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/imoveis")({

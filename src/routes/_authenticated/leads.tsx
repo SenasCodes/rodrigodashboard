@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useApp } from "../../lib/app-context";
 import { useState, useMemo } from "react";
 import { Search, Filter, ChevronLeft, ChevronRight, Eye } from "lucide-react";
-import type { Canal, EstadoLead } from "../../lib/mock-data";
+import type { Canal, EstadoLead } from "../../lib/supabase";
 
 export const Route = createFileRoute("/_authenticated/leads")({
   component: LeadsPage,

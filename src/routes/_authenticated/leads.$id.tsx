@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useApp } from "../../lib/app-context";
 import { ArrowLeft, Copy, ExternalLink, Phone, MessageSquare } from "lucide-react";
 import { useState } from "react";
-import type { EstadoLead } from "../../lib/mock-data";
+import type { EstadoLead } from "../../lib/supabase";
 
 export const Route = createFileRoute("/_authenticated/leads/$id")({
   component: LeadDetailPage,
