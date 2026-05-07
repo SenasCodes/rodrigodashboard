@@ -13,8 +13,6 @@ function IndexRedirect() {
   useEffect(() => {
     if (!isAuthenticated) {
       navigate({ to: "/login" });
-    } else {
-      navigate({ to: "/dashboard" });
     }
   }, [isAuthenticated, navigate]);
 
