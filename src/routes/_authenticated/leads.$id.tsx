@@ -4,7 +4,7 @@ import { ArrowLeft, Copy, ExternalLink, Phone, MessageSquare } from "lucide-reac
 import { useState } from "react";
 import type { EstadoLead } from "../../lib/mock-data";
 
-export const Route = createFileRoute("/_authenticated/leads_/$id")({
+export const Route = createFileRoute("/_authenticated/leads/$id")({
   component: LeadDetailPage,
 });
 

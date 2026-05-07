@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, type DropResult } from "@hello-pangea/dnd";
 import type { Lead, FaseKanban } from "../../lib/mock-data";
 
-export const Route = createFileRoute("/_authenticated/dashboard")({
+export const Route = createFileRoute("/_authenticated/")({
   component: DashboardPage,
 });
 
