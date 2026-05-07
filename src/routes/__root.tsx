@@ -5,7 +5,6 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { Toaster } from "sonner";
 import { AppProvider } from "../lib/app-context";
 import appCss from "../styles.css?url";
 
@@ -16,6 +15,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "LeadFlow — Gestão de Leads Imobiliários" },
       { name: "description", content: "Dashboard inteligente para gestão de leads imobiliários" },
+      { property: "og:title", content: "LeadFlow — Gestão de Leads Imobiliários" },
+      { name: "twitter:title", content: "LeadFlow — Gestão de Leads Imobiliários" },
+      { property: "og:description", content: "Dashboard inteligente para gestão de leads imobiliários" },
+      { name: "twitter:description", content: "Dashboard inteligente para gestão de leads imobiliários" },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b003d2c1-2abd-4437-91ec-b7d17a0ae081/id-preview-0d964b8d--3bd44427-1b99-4964-bbe0-98d4a72fe9f6.lovable.app-1778169895435.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b003d2c1-2abd-4437-91ec-b7d17a0ae081/id-preview-0d964b8d--3bd44427-1b99-4964-bbe0-98d4a72fe9f6.lovable.app-1778169895435.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:type", content: "website" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -48,7 +55,6 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AppProvider>
         <Outlet />
-        <Toaster theme="dark" position="top-right" richColors />
       </AppProvider>
     </QueryClientProvider>
   );
