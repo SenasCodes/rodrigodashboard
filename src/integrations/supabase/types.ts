@@ -14,7 +14,201 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      conversations: {
+        Row: {
+          content: string | null
+          id: string
+          lead_id: string
+          role: string | null
+          timestamp: string | null
+        }
+        Insert: {
+          content?: string | null
+          id?: string
+          lead_id: string
+          role?: string | null
+          timestamp?: string | null
+        }
+        Update: {
+          content?: string | null
+          id?: string
+          lead_id?: string
+          role?: string | null
+          timestamp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads: {
+        Row: {
+          channel: string | null
+          created_at: string
+          email: string | null
+          id: string
+          last_activity_at: string | null
+          lead_status: string | null
+          name: string | null
+          phone: string | null
+          profile_summary: string | null
+          telegram_chat_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          channel?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          last_activity_at?: string | null
+          lead_status?: string | null
+          name?: string | null
+          phone?: string | null
+          profile_summary?: string | null
+          telegram_chat_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          channel?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          last_activity_at?: string | null
+          lead_status?: string | null
+          name?: string | null
+          phone?: string | null
+          profile_summary?: string | null
+          telegram_chat_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          lead_id: string | null
+          message: string | null
+          read: boolean | null
+          type: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lead_id?: string | null
+          message?: string | null
+          read?: boolean | null
+          type?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lead_id?: string | null
+          message?: string | null
+          read?: boolean | null
+          type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      properties: {
+        Row: {
+          area: number | null
+          assigned_agent: string | null
+          bathrooms: number | null
+          bedrooms: number | null
+          created_at: string
+          description: string | null
+          id: string
+          images: string | null
+          listing_url: string | null
+          location: string | null
+          price: number | null
+          property_id: string | null
+          status: string | null
+          title: string | null
+          typology: string | null
+        }
+        Insert: {
+          area?: number | null
+          assigned_agent?: string | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: string | null
+          listing_url?: string | null
+          location?: string | null
+          price?: number | null
+          property_id?: string | null
+          status?: string | null
+          title?: string | null
+          typology?: string | null
+        }
+        Update: {
+          area?: number | null
+          assigned_agent?: string | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: string | null
+          listing_url?: string | null
+          location?: string | null
+          price?: number | null
+          property_id?: string | null
+          status?: string | null
+          title?: string | null
+          typology?: string | null
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          completed: boolean | null
+          created_at: string
+          description: string | null
+          id: string
+          lead_id: string | null
+        }
+        Insert: {
+          completed?: boolean | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          lead_id?: string | null
+        }
+        Update: {
+          completed?: boolean | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          lead_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
