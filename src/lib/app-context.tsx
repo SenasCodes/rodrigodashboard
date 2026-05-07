@@ -117,6 +117,44 @@ export function AppProvider({ children }: { children: ReactNode }) {
     else setIsLoading(false);
   }, [isAuthenticated, fetchAll]);
 
+  // ─── Real-time subscriptions ───
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const channel = supabase
+      .channel("dashboard-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "leads" },
+        () => fetchAll()
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "conversations" },
+        () => fetchAll()
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "properties" },
+        () => setTimeout(fetchAll, 500)
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "notifications" },
+        () => fetchAll()
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "tasks" },
+        () => fetchAll()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [isAuthenticated, fetchAll]);
+
   const login = useCallback((user: string, pass: string) => {
     if (user === "rodrigo" && pass === "rodrigo") {
       setIsAuthenticated(true);

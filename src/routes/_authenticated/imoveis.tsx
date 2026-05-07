@@ -26,24 +26,77 @@ function ImoveisPage() {
   const openAdd = () => { setEditing(null); setForm(emptyImovel); setUrl(""); setShowModal(true); };
   const openEdit = (im: Imovel) => { setEditing(im); setForm(im); setShowModal(true); };
 
-  const simulateFetch = () => {
+  const simulateFetch = async () => {
     if (!url) return;
     setFetching(true);
-    setTimeout(() => {
+
+    // Try to extract property info from URL
+    const urlObj = new URL(url.startsWith("http") ? url : "https://" + url);
+    const pathParts = urlObj.pathname.split("/").filter(Boolean);
+    const lastSegment = pathParts[pathParts.length - 1] || "";
+
+    // Guess title from URL path
+    const guessedTitle = lastSegment
+      .replace(/[-_]/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase())
+      .replace(/Imovel\s*/i, "Imóvel ")
+      .slice(0, 60) || "Imóvel do portal";
+
+    // Try n8n webhook if configured
+    let fetched = false;
+    const n8nWebhook = import.meta.env.VITE_N8N_SCRAPER_URL;
+    if (n8nWebhook) {
+      try {
+        const res = await fetch(n8nWebhook, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: url.startsWith("http") ? url : "https://" + url }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.titulo || data.title) {
+            setForm({
+              titulo: data.titulo || data.title || guessedTitle,
+              preco: Number(data.preco || data.price || 0),
+              localizacao: data.localizacao || data.location || "",
+              tipologia: data.tipologia || data.typology || "T2",
+              area: Number(data.area || 0),
+              quartos: Number(data.quartos || data.bedrooms || 2),
+              casasBanho: Number(data.casasBanho || data.bathrooms || 1),
+              descricao: data.descricao || data.description || "",
+              imagem: data.imagem || data.image || form.imagem,
+              ativo: true,
+            });
+            fetched = true;
+          }
+        }
+      } catch (e) {
+        console.log("Scraper webhook unavailable, using URL-based guess");
+      }
+    }
+
+    if (!fetched) {
+      // Guess typology from URL
+      const typoMatch = guessedTitle.match(/\b(T[0-9])\b/i) || guessedTitle.match(/\bTipo\s*([0-9])\b/i);
+      const guessedTypology = typoMatch ? typoMatch[1].toUpperCase() : "T2";
+
+      // Guess price from URL
+      const priceMatch = guessedTitle.match(/(\d+)\s*(?:mil|k|000)/i) || url.match(/(\d{5,7})/);
+
       setForm({
-        titulo: "Apartamento T2 Renovado",
-        preco: 225000,
-        localizacao: "Lisboa - Campo de Ourique",
-        tipologia: "T2",
-        area: 75,
-        quartos: 2,
+        titulo: guessedTitle,
+        preco: priceMatch ? Number(priceMatch[1]) * (guessedTitle.includes("mil") ? 1000 : 1) : 0,
+        localizacao: pathParts.includes("lisboa") ? "Lisboa" : "",
+        tipologia: guessedTypology,
+        area: 0,
+        quartos: Number(guessedTypology?.replace("T", "") || 2),
         casasBanho: 1,
-        descricao: "Apartamento totalmente renovado com cozinha equipada, próximo de comércio e transportes. Excelente exposição solar.",
-        imagem: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=300&fit=crop",
+        descricao: "URL: " + url,
+        imagem: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop",
         ativo: true,
       });
-      setFetching(false);
-    }, 1500);
+    }
+    setFetching(false);
   };
 
   const handleSave = () => {
